@@ -39,7 +39,7 @@ export default function App() {
    */
   const callBackendApi = async (userMessage, actionType = 'chat') => {
     // URL du backend (en local pour le développement)
-    const backendUrl = 'http://localhost:3001';
+    const backendUrl = 'https://lem-7oyu.vercel.app/api/chat';
     
     try {
       let endpoint = '/api/chat'; // Endpoint par défaut pour chat
