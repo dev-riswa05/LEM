@@ -12,7 +12,8 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middlewares
-app.use(cors()); // Permet les requêtes depuis n'importe quelle origine (CORS)
+app.use(cors({ origin: "https://lem-tau.vercel.app/" }));
+ // Permet les requêtes depuis n'importe quelle origine (CORS)
 app.use(bodyParser.json()); // Permet de lire le corps des requêtes au format JSON
 
 // Initialiser Gemini AI avec la clé API
