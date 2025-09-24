@@ -19,7 +19,7 @@ export default function App() {
   const endRef = useRef(null);
 
   // 📌 URL du backend codée en dur
-  const backendUrl = "https://lem-j7hw.vercel.app";
+  const backendUrl = "https://lem-rao1.vercel.app/";
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });

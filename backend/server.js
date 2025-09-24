@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-  origin: "https://lem-tau.vercel.app" // URL frontend déployé
+  origin: "https://lem-gamma.vercel.app/" // URL frontend déployé
 }));
 app.use(bodyParser.json());
 
