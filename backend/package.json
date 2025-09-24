@@ -1,9 +1,10 @@
 {
-  "name": "backend-sante",
+  "name": "backend",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -11,5 +12,8 @@
     "@google/generative-ai": "^0.15.0",
     "dotenv": "^16.3.1",
     "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
