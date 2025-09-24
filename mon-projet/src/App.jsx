@@ -1,48 +1,33 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-// Définition du composant principal "App"
 export default function App() {
-  // États principaux de l'application
-  const [showChat, setShowChat] = useState(false); // Contrôle si la fenêtre de chat est affichée
-  const [message, setMessage] = useState(''); // Texte saisi par l'utilisateur
-  const [messages, setMessages] = useState([]); // Historique des messages
-  const [isLoading, setIsLoading] = useState(false); // Indique si une requête est en cours
-  const [isSummarizing, setIsSummarizing] = useState(false); // Indique si un résumé est en cours
-  const [isGettingTip, setIsGettingTip] = useState(false); // Indique si une astuce est en cours de récupération
-  const [theme, setTheme] = useState('light'); // Thème clair ou sombre
-  const [userAccentColor, setUserAccentColor] = useState('bg-green-600'); // Couleur par défaut pour les messages utilisateur
-  const [aiAccentColor, setAiAccentColor] = useState('bg-gray-500'); // Couleur par défaut pour les messages IA
+  const [showChat, setShowChat] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSummarizing, setIsSummarizing] = useState(false);
+  const [isGettingTip, setIsGettingTip] = useState(false);
+  const [theme, setTheme] = useState('light');
+  const [userAccentColor, setUserAccentColor] = useState('bg-green-600');
+  const [aiAccentColor, setAiAccentColor] = useState('bg-gray-500');
 
-  // Couleurs disponibles pour personnalisation
   const colors = [
-    'bg-purple-600',
-    'bg-blue-600',
-    'bg-red-600',
-    'bg-orange-600',
-    'bg-yellow-600',
-    'bg-green-600',
+    'bg-purple-600', 'bg-blue-600', 'bg-red-600',
+    'bg-orange-600', 'bg-yellow-600', 'bg-green-600'
   ];
 
-  // Référence pour le scroll automatique vers le dernier message
   const endRef = useRef(null);
 
-  // Effet qui fait défiler la fenêtre vers le dernier message quand la liste change
+  // 📌 URL du backend codée en dur
+  const backendUrl = "https://lem-j7hw.vercel.app";
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  /**
-   * Appel au backend pour récupérer une réponse, résumé ou astuce santé
-   * @param userMessage {string} - Message de l'utilisateur
-   * @param actionType {string} - Type d'action : 'chat', 'summarize', 'tip'
-   * @returns {string} - Réponse du backend
-   */
   const callBackendApi = async (userMessage, actionType = 'chat') => {
-    // URL du backend (en local pour le développement)
-    const backendUrl = 'https://lem-j7hw.vercel.app/';
-    
     try {
-      let endpoint = '/api/chat'; // Endpoint par défaut pour chat
+      let endpoint = '/api/chat';
       let body = {
         message: userMessage,
         history: messages.map(msg => ({
@@ -51,144 +36,93 @@ export default function App() {
         }))
       };
 
-      // Adaptation pour d'autres actions spécifiques
       if (actionType === 'summarize') {
         endpoint = '/api/summarize';
         body = { conversation: messages };
       } else if (actionType === 'tip') {
         endpoint = '/api/tip';
-        body = {}; // Pas besoin de message pour l'astuce
+        body = {};
       }
 
-      // Envoi de la requête au backend
       const res = await fetch(`${backendUrl}${endpoint}`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
 
-      // Gestion des erreurs
       if (!res.ok) {
+        console.error("Erreur backend", res.status, res.statusText);
         throw new Error(`Erreur backend: ${res.status}`);
       }
-      
+
       const data = await res.json();
-      return data.response || data.message || "Réponse reçue"; // Retour de la réponse
+      return data.response || data.message || "Réponse reçue";
     } catch (error) {
       console.error('Erreur backend:', error);
       return `Désolé, le service est temporairement indisponible. Erreur: ${error.message}`;
     }
   };
 
-  /**
-   * Gestion de l'envoi d'un message utilisateur
-   */
   const handleSendMessage = async () => {
-    if (!message.trim() || isLoading) return; // Évite l'envoi si vide ou déjà en cours
+    if (!message.trim() || isLoading) return;
 
     const userMessage = { id: Date.now(), text: message.trim(), sender: 'user' };
-    setMessages((prev) => [...prev, userMessage]); // Ajoute le message utilisateur
-    setMessage(''); // Réinitialise l'input
-    setIsLoading(true); // Indique que le backend est en cours de traitement
+    setMessages(prev => [...prev, userMessage]);
+    setMessage('');
+    setIsLoading(true);
 
-    // Appel backend
     const botText = await callBackendApi(userMessage.text, 'chat');
 
     if (botText) {
-      setMessages((prev) => [...prev, { id: Date.now() + 1, text: botText, sender: 'ai' }]);
+      setMessages(prev => [...prev, { id: Date.now() + 1, text: botText, sender: 'ai' }]);
     }
 
-    setIsLoading(false); // Fin du chargement
+    setIsLoading(false);
   };
 
-  /**
-   * Résumé de la conversation
-   */
   const handleSummarize = async () => {
     if (messages.length === 0 || isSummarizing || isLoading) return;
     setIsSummarizing(true);
-    
-    const summaryText = await callBackendApi('', 'summarize');
 
+    const summaryText = await callBackendApi('', 'summarize');
     if (summaryText) {
       setMessages(prev => [
         ...prev,
-        { 
-          id: Date.now() + 100, 
-          text: `📋 **Résumé de la conversation** : ${summaryText}`,
-          sender: 'ai' 
-        }
+        { id: Date.now() + 100, text: `📋 Résumé : ${summaryText}`, sender: 'ai' }
       ]);
     }
+
     setIsSummarizing(false);
   };
 
-  /**
-   * Récupère une astuce santé du jour
-   */
   const handleDailyTip = async () => {
     if (isGettingTip || isLoading) return;
     setIsGettingTip(true);
-    
-    const tipText = await callBackendApi('', 'tip');
 
+    const tipText = await callBackendApi('', 'tip');
     if (tipText) {
       setMessages(prev => [
         ...prev,
-        { 
-          id: Date.now() + 200, 
-          text: `💡 **Astuce Santé** : ${tipText}`,
-          sender: 'ai' 
-        }
+        { id: Date.now() + 200, text: `💡 Astuce Santé : ${tipText}`, sender: 'ai' }
       ]);
     }
+
     setIsGettingTip(false);
   };
 
-  /**
-   * Réinitialise la conversation
-   */
   const handleNewConversation = () => setMessages([]);
-
-  /**
-   * Changement de thème
-   */
   const handleThemeChange = (t) => setTheme(t);
-
-  /**
-   * Changement de couleur utilisateur
-   */
   const handleUserColorChange = (c) => setUserAccentColor(c);
-
-  /**
-   * Changement de couleur IA
-   */
   const handleAiColorChange = (c) => setAiAccentColor(c);
 
   return (
     <div className={`flex h-screen font-inter relative ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-100'}`}>
       {!showChat ? (
-        // Écran d'accueil avant ouverture du chat
         <div className="flex-1 flex flex-col items-center justify-center relative z-20">
-          <div className="flex flex-col items-center p-8 rounded-2xl shadow-2xl bg-white/50 backdrop-blur-sm animate-fade-in transition-all">
-            <svg
-              className="w-24 h-24 mb-6 text-red-600 animate-pulse transition-transform"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 017.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3A5.5 5.5 0 0122 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 text-center mb-4 leading-tight">
-              Votre Guide Bien-Être
-            </h1>
-            <p className="text-gray-800 text-center text-lg md:text-xl mb-8">
-              Discutez de vos préoccupations en matière de santé en toute confidentialité
-            </p>
+          <div className="flex flex-col items-center p-8 rounded-2xl shadow-2xl bg-white/50 backdrop-blur-sm">
+            <h1 className="text-4xl font-extrabold text-gray-800 text-center mb-4">Votre Guide Bien-Être</h1>
             <button
-              className="px-8 py-4 text-xl font-bold rounded-full bg-green-500 hover:bg-green-600 text-white shadow-lg transition transform hover:scale-105"
+              className="px-8 py-4 text-xl font-bold rounded-full bg-green-500 hover:bg-green-600 text-white shadow-lg transition"
               onClick={() => setShowChat(true)}
             >
               Démarrer
@@ -196,114 +130,29 @@ export default function App() {
           </div>
         </div>
       ) : (
-        // Interface principale du chat
-        <div className="flex-1 flex flex-col md:flex-row relative z-10 w-full overflow-hidden">
-          {/* Sidebar */}
-          <div className={`hidden md:flex relative z-10 md:w-1/4 p-6 flex-col space-y-6 overflow-y-auto ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
-            {/* Personnalisation */}
-            <h2 className="text-2xl font-bold">Personnalisation</h2>
-            <button className="px-4 py-2 text-sm font-semibold rounded-full bg-green-500 hover:bg-green-600 text-white transition" onClick={handleNewConversation}>
-              Nouvelle conversation
-            </button>
-
-            {/* Thème */}
-            <div className="flex flex-col space-y-4">
-              <h3 className="text-lg font-semibold">Thème</h3>
-              <div className="flex space-x-3">
-                <button className={`p-3 rounded-xl border-2 ${theme === 'light' ? 'border-blue-500' : 'border-transparent'} bg-white text-gray-800`} onClick={() => handleThemeChange('light')}>
-                  ☀️ Clair
-                </button>
-                <button className={`p-3 rounded-xl border-2 ${theme === 'dark' ? 'border-blue-500' : 'border-transparent'} bg-gray-800 text-white`} onClick={() => handleThemeChange('dark')}>
-                  🌙 Sombre
-                </button>
-              </div>
-            </div>
-
-            {/* Couleurs utilisateur et IA */}
-            <div className="flex flex-col space-y-3">
-              <h3 className="text-lg font-semibold">Couleur utilisateur</h3>
-              <div className="flex flex-wrap gap-2">
-                {colors.map((color, i) => (
-                  <button key={i} className={`w-8 h-8 rounded-full cursor-pointer border-2 ${color} ${userAccentColor === color ? 'border-white' : 'border-transparent'}`} onClick={() => handleUserColorChange(color)} aria-label={`Changer couleur utilisateur ${color}`} />
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col space-y-3">
-              <h3 className="text-lg font-semibold">Couleur IA</h3>
-              <div className="flex flex-wrap gap-2">
-                {colors.map((color, i) => (
-                  <button key={i} className={`w-8 h-8 rounded-full cursor-pointer border-2 ${color} ${aiAccentColor === color ? 'border-white' : 'border-transparent'}`} onClick={() => handleAiColorChange(color)} aria-label={`Changer couleur IA ${color}`} />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Zone de chat */}
-          <div className={`flex-1 flex flex-col overflow-hidden ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-300">
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-green-500 mr-2 flex items-center justify-center">
-                  🏥
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col p-4">
+            <div className="flex-1 overflow-y-auto p-3 flex flex-col">
+              {messages.length === 0 && <div className="text-center text-gray-500 py-8">💬 Commencez la conversation !</div>}
+              {messages.map(msg => (
+                <div key={msg.id} className={`p-4 rounded-2xl max-w-[90%] ${msg.sender === 'user' ? `${userAccentColor} text-white self-end` : `${aiAccentColor} text-white self-start`}`}>
+                  <p>{msg.text}</p>
                 </div>
-                <span className="text-lg md:text-xl font-bold">Assistant Santé</span>
-              </div>
-              <button className="md:hidden p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => setShowChat(false)}>
-                ← Retour
-              </button>
+              ))}
+              {isLoading && <div className={`p-4 rounded-2xl ${aiAccentColor} text-white max-w-md`}>Chargement...</div>}
+              <div ref={endRef} />
             </div>
-
-            {/* Messages */}
-            <div className={`flex-1 overflow-y-auto p-3 md:p-6 flex flex-col ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
-              <div className="flex flex-col space-y-4">
-                {/* Message par défaut */}
-                {messages.length === 0 && (
-                  <div className="text-center text-gray-500 py-8">
-                    <p className="text-lg">💬 Commencez la conversation !</p>
-                    <p className="text-sm">Exemple : "Bonjour, j'ai mal à la tête"</p>
-                  </div>
-                )}
-
-                {/* Affichage des messages */}
-                {messages.map((msg) => (
-                  <div key={msg.id} className={`p-4 rounded-2xl max-w-[90%] md:max-w-md break-words ${msg.sender === 'user' ? `${userAccentColor} text-white self-end ml-auto` : `${aiAccentColor} text-white self-start`}`}>
-                    <div className="flex justify-between items-center">
-                      <p className="whitespace-pre-wrap">{msg.text}</p>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Loader */}
-                {isLoading && (
-                  <div className={`p-4 rounded-2xl self-start ${aiAccentColor} text-white max-w-md`}>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 rounded-full bg-white animate-bounce" />
-                      <div className="w-2 h-2 rounded-full bg-white animate-bounce delay-150" />
-                      <div className="w-2 h-2 rounded-full bg-white animate-bounce delay-300" />
-                      <span></span>
-                    </div>
-                  </div>
-                )}
-                <div ref={endRef} /> {/* Scroll automatique */}
-              </div>
-            </div>
-
-            {/* Zone d'entrée de texte */}
-            <div className={`p-3 md:p-4 border-t flex items-center gap-2 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
-              <button className="p-3 rounded-full bg-purple-500 hover:bg-purple-600 text-white transition disabled:opacity-50 flex items-center" onClick={handleSummarize} disabled={isSummarizing || isLoading || isGettingTip || messages.length === 0} title="Résumer la conversation">
-                {isSummarizing ? 'RESUMER...' : 'RESUMER'}
-              </button>
-
-              <button className="p-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white transition disabled:opacity-50 flex items-center" onClick={handleDailyTip} disabled={isGettingTip || isLoading || isSummarizing} title="Astuce santé du jour">
-                {isGettingTip ? 'ASTUCE...' : 'ASTUCE'}
-              </button>
-
-              <input type="text" placeholder="Posez votre question santé..." className={`flex-1 px-4 py-3 rounded-full border text-sm md:text-base ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white' : 'bg-gray-100 border-gray-300 text-gray-800'}`} value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} disabled={isLoading || isSummarizing || isGettingTip} />
-
-              <button className="p-3 rounded-full bg-green-500 hover:bg-green-600 text-white transition disabled:opacity-50 flex items-center" onClick={handleSendMessage} disabled={isLoading || isSummarizing || isGettingTip || !message.trim()} title="Envoyer le message">
-                ➤
-              </button>
+            <div className="p-3 flex items-center gap-2 border-t">
+              <button onClick={handleSummarize} disabled={isSummarizing || isLoading}>RESUMER</button>
+              <button onClick={handleDailyTip} disabled={isGettingTip || isLoading}>ASTUCE</button>
+              <input
+                type="text"
+                placeholder="Posez votre question santé..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+              />
+              <button onClick={handleSendMessage} disabled={isLoading || !message.trim()}>➤</button>
             </div>
           </div>
         </div>
