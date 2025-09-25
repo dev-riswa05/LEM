@@ -111,7 +111,7 @@ export default function App() {
         ...prev,
         {
           id: Date.now() + 200,
-          text: `💡 **Astuce Santé** : ${tipText}`,
+          text: `💡 **conseil Santé** : ${tipText}`,
           sender: 'ai'
         }
       ]);
@@ -206,3 +206,4 @@ export default function App() {
     </div>
   );
 }
+
