@@ -6,7 +6,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: 'https://lem-pdgo.vercel.app/' }));
+app.use(cors({ origin: 'https://lem-pdgo.vercel.app' }));
 app.use(express.json());
 
 const API_KEY = process.env.GEMINI_API_KEY;
