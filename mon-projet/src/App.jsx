@@ -22,7 +22,7 @@ export default function App() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const BACKEND_URL = 'https://lem-dusky.vercel.app';
+  const BACKEND_URL = 'https://lem-dusky.vercel.app'; // Ton backend déployé
 
   const callBackendApi = async (userMessage, actionType = 'chat') => {
     try {
@@ -44,7 +44,7 @@ export default function App() {
         options.body = JSON.stringify({ conversation: messages });
       } else if (actionType === 'tip') {
         endpoint = '/api/tip';
-        options = { method: 'GET' };
+        options = { method: 'GET' }; // GET pour ton backend
       }
 
       const res = await fetch(`${BACKEND_URL}${endpoint}`, options);
@@ -125,30 +125,30 @@ export default function App() {
   const handleAiColorChange = (c) => setAiAccentColor(c);
 
   return (
-    <div className={`flex flex-col md:flex-row h-screen font-inter relative ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-100'}`}>
+    <div className={`flex flex-col min-h-screen font-inter relative ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-100'}`}>
       {!showChat ? (
         <div className="flex-1 flex flex-col items-center justify-center relative z-20 p-4">
           <div className="flex flex-col items-center p-6 md:p-8 rounded-2xl shadow-2xl bg-white/50 backdrop-blur-sm animate-fade-in transition-all max-w-lg w-full">
-            <svg className="w-20 h-20 mb-4 md:w-24 md:h-24 text-red-600 animate-pulse transition-transform" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-20 h-20 md:w-24 md:h-24 mb-6 text-red-600 animate-pulse transition-transform" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 017.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3A5.5 5.5 0 0122 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
             <h1 className="text-3xl md:text-5xl font-extrabold text-gray-800 text-center mb-4 leading-tight">
               Votre Guide Bien-Être
             </h1>
-            <p className="text-gray-800 text-center text-sm md:text-lg mb-6">
+            <p className="text-gray-800 text-center text-lg md:text-xl mb-8">
               Discutez de vos préoccupations en matière de santé en toute confidentialité
             </p>
-            <button className="px-6 py-3 md:px-8 md:py-4 text-lg md:text-xl font-bold rounded-full bg-green-500 hover:bg-green-600 text-white shadow-lg transition transform hover:scale-105">
+            <button className="px-8 py-4 text-xl font-bold rounded-full bg-green-500 hover:bg-green-600 text-white shadow-lg transition transform hover:scale-105" onClick={() => setShowChat(true)}>
               Démarrer
             </button>
           </div>
         </div>
       ) : (
-        <>
-          {/* Sidebar */}
-          <div className={`hidden md:flex relative z-10 md:w-1/4 p-4 md:p-6 flex-col space-y-6 overflow-y-auto ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
-            <h2 className="text-xl md:text-2xl font-bold">Personnalisation</h2>
-            <button className="px-4 py-2 text-sm font-semibold rounded-full bg-green-500 hover:bg-green-600 text-white transition">
+        <div className="flex-1 flex flex-col md:flex-row relative z-10 w-full overflow-hidden">
+          {/* Sidebar - Visible on medium screens and larger */}
+          <div className={`hidden md:flex relative z-10 md:w-1/4 lg:w-1/5 xl:w-1/6 p-6 flex-col space-y-6 overflow-y-auto ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
+            <h2 className="text-2xl font-bold">Personnalisation</h2>
+            <button className="px-4 py-2 text-sm font-semibold rounded-full bg-green-500 hover:bg-green-600 text-white transition" onClick={handleNewConversation}>
               Nouvelle conversation
             </button>
 
@@ -183,9 +183,9 @@ export default function App() {
             </div>
           </div>
 
-          {/* Zone de chat */}
-          <div className={`flex-1 flex flex-col overflow-hidden w-full min-h-0 ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
-            <div className="flex items-center justify-between p-3 md:p-4 border-b border-gray-300">
+          {/* Chat Zone */}
+          <div className={`flex-1 flex flex-col overflow-hidden ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
+            <div className="flex items-center justify-between p-4 border-b border-gray-300">
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-green-500 mr-2 flex items-center justify-center">🏥</div>
                 <span className="text-lg md:text-xl font-bold">Assistant Santé</span>
@@ -193,7 +193,7 @@ export default function App() {
               <button className="md:hidden p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => setShowChat(false)}>← Retour</button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-3 md:p-6 flex flex-col min-h-0">
+            <div className={`flex-1 overflow-y-auto p-3 md:p-6 flex flex-col ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
               <div className="flex flex-col space-y-4">
                 {messages.length === 0 && (
                   <div className="text-center text-gray-500 py-8">
@@ -203,7 +203,7 @@ export default function App() {
                 )}
 
                 {messages.map((msg) => (
-                  <div key={msg.id} className={`p-4 rounded-2xl max-w-full sm:max-w-[90%] md:max-w-md break-words ${msg.sender === 'user' ? `${userAccentColor} text-white self-end ml-auto` : `${aiAccentColor} text-white self-start`}`}>
+                  <div key={msg.id} className={`p-4 rounded-2xl max-w-[90%] md:max-w-md break-words ${msg.sender === 'user' ? `${userAccentColor} text-white self-end ml-auto` : `${aiAccentColor} text-white self-start`}`}>
                     <p className="whitespace-pre-wrap">{msg.text}</p>
                   </div>
                 ))}
@@ -221,31 +221,23 @@ export default function App() {
               </div>
             </div>
 
-            <div className={`p-2 sm:p-3 md:p-4 border-t flex items-center gap-2 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
-              <button className="p-3 sm:p-4 rounded-full bg-purple-500 hover:bg-purple-600 text-white transition disabled:opacity-50" onClick={handleSummarize} disabled={isSummarizing || isLoading || isGettingTip || messages.length === 0}>
+            <div className={`p-3 md:p-4 border-t flex items-center gap-2 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
+              <button className="p-3 rounded-full bg-purple-500 hover:bg-purple-600 text-white transition disabled:opacity-50" onClick={handleSummarize} disabled={isSummarizing || isLoading || isGettingTip || messages.length === 0}>
                 {isSummarizing ? 'RESUMER...' : 'RESUMER'}
               </button>
 
-              <button className="p-3 sm:p-4 rounded-full bg-orange-500 hover:bg-orange-600 text-white transition disabled:opacity-50" onClick={handleDailyTip} disabled={isGettingTip || isLoading || isSummarizing}>
+              <button className="p-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white transition disabled:opacity-50" onClick={handleDailyTip} disabled={isGettingTip || isLoading || isSummarizing}>
                 {isGettingTip ? 'ASTUCE...' : 'ASTUCE'}
               </button>
 
-              <input
-                type="text"
-                placeholder="Posez votre question santé..."
-                className={`flex-1 px-4 py-3 rounded-full border text-sm sm:text-base md:text-lg ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white' : 'bg-gray-100 border-gray-300 text-gray-800'}`}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                disabled={isLoading || isSummarizing || isGettingTip}
-              />
+              <input type="text" placeholder="Posez votre question santé..." className={`flex-1 px-4 py-3 rounded-full border text-sm md:text-base ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white' : 'bg-gray-100 border-gray-300 text-gray-800'}`} value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} disabled={isLoading || isSummarizing || isGettingTip} />
 
-              <button className="p-3 sm:p-4 rounded-full bg-green-500 hover:bg-green-600 text-white transition disabled:opacity-50" onClick={handleSendMessage} disabled={isLoading || isSummarizing || isGettingTip || !message.trim()}>
+              <button className="p-3 rounded-full bg-green-500 hover:bg-green-600 text-white transition disabled:opacity-50" onClick={handleSendMessage} disabled={isLoading || isSummarizing || isGettingTip || !message.trim()}>
                 ➤
               </button>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
