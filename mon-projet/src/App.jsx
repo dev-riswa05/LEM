@@ -22,7 +22,7 @@ export default function App() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const BACKEND_URL = 'http://localhost:3001';
+  const BACKEND_URL = 'https://lem-psi.vercel.app/';
 
   const callBackendApi = async (userMessage, actionType = 'chat') => {
     try {
