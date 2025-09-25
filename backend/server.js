@@ -49,7 +49,7 @@ const callGeminiApi = async (prompt) => {
 
         // 🛠️ Gestion spécifique selon l’erreur
         if (error.message.includes("quota") || error.message.includes("Quota")) {
-            return "⚠️ Vous avez atteint la limite de requêtes (quota). Réessayez plus tard ou changez de clé API.";
+            return "⚠️ Vous avez atteint la limite de requêtes (quota). Réessayez plus tard .";
         }
 
         if (error.message.includes("429")) {
