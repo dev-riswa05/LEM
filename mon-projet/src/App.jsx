@@ -22,34 +22,32 @@ export default function App() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const BACKEND_URL = 'https://lem-psi.vercel.app/api/chat';
+  const BACKEND_URL = 'http://localhost:3001'; // Ton backend déployé
 
   const callBackendApi = async (userMessage, actionType = 'chat') => {
     try {
       let endpoint = '/api/chat';
-      let body = {
-        message: userMessage,
-        history: messages.map(msg => ({
-          role: msg.sender === 'user' ? 'user' : 'assistant',
-          content: msg.text
-        }))
+      let options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          history: messages.map(msg => ({
+            role: msg.sender === 'user' ? 'user' : 'assistant',
+            content: msg.text
+          }))
+        })
       };
 
       if (actionType === 'summarize') {
         endpoint = '/api/summarize';
-        body = { conversation: messages };
+        options.body = JSON.stringify({ conversation: messages });
       } else if (actionType === 'tip') {
         endpoint = '/api/tip';
-        body = {};
+        options = { method: 'GET' }; // GET pour ton backend
       }
 
-      const res = await fetch(`${BACKEND_URL}${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
+      const res = await fetch(`${BACKEND_URL}${endpoint}`, options);
 
       if (!res.ok) {
         throw new Error(`Erreur backend: ${res.status}`);
@@ -60,6 +58,7 @@ export default function App() {
       if (actionType === 'tip') return data.tip;
       if (actionType === 'summarize') return data.summary;
       return data.response;
+
     } catch (error) {
       console.error('Erreur backend:', error);
       return `Désolé, le service est temporairement indisponible. Erreur: ${error.message}`;
