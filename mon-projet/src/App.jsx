@@ -128,59 +128,20 @@ export default function App() {
     <div className={`flex flex-col min-h-screen font-inter relative overflow-hidden ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-100'}`}>
       {!showChat ? (
         <div className="flex-1 flex flex-col items-center justify-center relative z-20 p-4">
-          <div className="flex flex-col items-center p-6 md:p-8 rounded-2xl shadow-2xl bg-white/50 backdrop-blur-sm animate-fade-in transition-all max-w-lg w-full">
-            <svg className="w-20 h-20 md:w-24 md:h-24 mb-6 text-red-600 animate-pulse transition-transform" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 017.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3A5.5 5.5 0 0122 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-gray-800 text-center mb-4 leading-tight">
-              Votre Assistant Santé IA
-            </h2>
-            <p className="text-gray-800 text-center text-lg md:text-xl mb-8">
-              Discutez de vos préoccupations santé, en toute sécurité.
-            </p>
-            <button className="px-8 py-4 text-xl font-bold rounded-full bg-green-500 hover:bg-green-600 text-white shadow-lg transition transform hover:scale-105" onClick={() => setShowChat(true)}>
-              Parlez à Santé IA
-            </button>
-          </div>
+          {/* Page d'accueil */}
         </div>
       ) : (
         <div className="flex-1 flex flex-col md:flex-row relative z-10 w-full overflow-hidden">
           
           {/* Sidebar */}
           <div className={`hidden md:flex relative z-10 md:w-1/4 lg:w-1/5 xl:w-1/6 p-6 flex-col space-y-6 ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
-            <h2 className="text-2xl font-bold">Personnalisation</h2>
-            <button className="px-4 py-2 text-sm font-semibold rounded-full bg-green-500 hover:bg-green-600 text-white transition" onClick={handleNewConversation}>
-              Nouvelle conversation
-            </button>
-            <div className="flex flex-col space-y-4">
-              <h3 className="text-lg font-semibold">Thème</h3>
-              <div className="flex space-x-3">
-                <button className={`p-3 rounded-xl border-2 ${theme === 'light' ? 'border-blue-500' : 'border-transparent'} bg-white text-gray-800`} onClick={() => handleThemeChange('light')}>☀️ Clair</button>
-                <button className={`p-3 rounded-xl border-2 ${theme === 'dark' ? 'border-blue-500' : 'border-transparent'} bg-gray-800 text-white`} onClick={() => handleThemeChange('dark')}>🌙 Sombre</button>
-              </div>
-            </div>
-            <div className="flex flex-col space-y-3">
-              <h3 className="text-lg font-semibold">Couleur utilisateur</h3>
-              <div className="flex flex-wrap gap-2">
-                {colors.map((color, i) => (
-                  <button key={i} className={`w-8 h-8 rounded-full cursor-pointer border-2 ${color} ${userAccentColor === color ? 'border-white' : 'border-transparent'}`} onClick={() => handleUserColorChange(color)} />
-                ))}
-              </div>
-            </div>
-            <div className="flex flex-col space-y-3">
-              <h3 className="text-lg font-semibold">Couleur IA</h3>
-              <div className="flex flex-wrap gap-2">
-                {colors.map((color, i) => (
-                  <button key={i} className={`w-8 h-8 rounded-full cursor-pointer border-2 ${color} ${aiAccentColor === color ? 'border-white' : 'border-transparent'}`} onClick={() => handleAiColorChange(color)} />
-                ))}
-              </div>
-            </div>
+            {/* Personnalisation */}
           </div>
 
           {/* Zone Chat */}
           <div className={`flex-1 flex flex-col ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
-            
-            {/* Header */}
+
+            {/* Header fixe */}
             <div className="flex items-center justify-between p-4 border-b border-gray-300 flex-none">
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-green-500 mr-2 flex items-center justify-center">🏥</div>
@@ -189,13 +150,12 @@ export default function App() {
               <button className="md:hidden p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => setShowChat(false)}>← Retour</button>
             </div>
 
-            {/* Messages */}
+            {/* Messages — scroll interne */}
             <div className={`flex-1 overflow-y-auto p-3 md:p-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
               <div className="flex flex-col space-y-4">
                 {messages.length === 0 && (
                   <div className="text-center text-gray-500 py-8">
                     <p className="text-lg">💬 Commencez la conversation !</p>
-                    <p className="text-sm">Exemple : "Bonjour, j'ai mal à la tête"</p>
                   </div>
                 )}
                 {messages.map((msg) => (
