@@ -26,7 +26,7 @@ export default function App() {
   }, [messages]);
 
   // URL du backend
-  const BACKEND_URL = 'https://lem-dusky.vercel.app';
+  const BACKEND_URL = 'https://lem-eight.vercel.app';
 
   /**
    * Fonction utilitaire pour appeler le backend
