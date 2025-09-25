@@ -9,27 +9,27 @@ const PORT = process.env.PORT || 3001;
 // --- Configuration CORS pour prod et dev ---
 app.use(cors({
     origin: [
-        'https://lem-8dqk.vercel.app', // ton front déployé
-        
+        'https://lem-8dqk.vercel.app', // ton front déployé (autorisé à accéder au backend)
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // méthodes HTTP autorisées
+    allowedHeaders: ['Content-Type', 'Authorization'] // en-têtes autorisées
 }));
 
-// Middleware pour préflight OPTIONS
-
-
+// Middleware pour parser le JSON des requêtes
 app.use(express.json());
 
 // Vérification de la clé API
 if (!process.env.GEMINI_API_KEY) {
     console.error('❌ GEMINI_API_KEY manquante dans .env');
+    // En mode développement => on stoppe l’app si clé absente
     if (process.env.NODE_ENV === 'development') process.exit(1);
 }
 
+// Initialisation de l’API Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'fake-key-for-init');
 
+// Fonction utilitaire pour appeler l’API Gemini
 const callGeminiApi = async (prompt) => {
     try {
         if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'fake-key-for-init') {
@@ -45,7 +45,7 @@ const callGeminiApi = async (prompt) => {
     }
 };
 
-// --- Middleware log ---
+// --- Middleware log (journalisation des requêtes entrantes) ---
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
     next();
@@ -53,7 +53,7 @@ app.use((req, res, next) => {
 
 // === ENDPOINTS ===
 
-// 1. Santé
+// 1. Vérification de santé du backend
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'OK',
@@ -64,7 +64,7 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// 2. Chat
+// 2. Chat principal avec l’assistant
 app.post('/api/chat', async (req, res) => {
     try {
         const { message, history = [] } = req.body;
@@ -73,6 +73,7 @@ app.post('/api/chat', async (req, res) => {
             return res.status(400).json({ success: false, error: "Le message est requis" });
         }
 
+        // Prompt construit avec l’historique pour donner du contexte
         const chatPrompt = `
 Tu es un assistant virtuel spécialisé en santé et bien-être.
 Règles :
@@ -100,7 +101,7 @@ Assistant:
     }
 });
 
-// 3. Résumer
+// 3. Résumer une conversation complète
 app.post('/api/summarize', async (req, res) => {
     try {
         const { conversation = [] } = req.body;
@@ -124,7 +125,7 @@ Résumé :
     }
 });
 
-// 4. Astuce santé
+// 4. Générer une astuce santé aléatoire
 app.get('/api/tip', async (req, res) => {
     try {
         const tipPrompt = `
@@ -140,7 +141,7 @@ Tu es un assistant santé. Donne une astuce santé courte, pratique et positive 
     }
 });
 
-// 5. Racine
+// 5. Route racine
 app.get('/', (req, res) => {
     res.json({
         message: 'Backend Chatbot Santé actif',
@@ -149,7 +150,6 @@ app.get('/', (req, res) => {
     });
 });
 
-// --- Erreur 404 ---
 // --- Gestion des erreurs 404 ---
 app.use((req, res) => {
     res.status(404).json({
@@ -159,15 +159,13 @@ app.use((req, res) => {
     });
 });
 
-
-
-// --- Erreur globale ---
+// --- Gestion des erreurs globales ---
 app.use((error, req, res, next) => {
     console.error('Erreur globale:', error);
     res.status(500).json({ success: false, error: 'Erreur interne du serveur' });
 });
 
-// --- Démarrage ---
+// --- Démarrage du serveur ---
 app.listen(PORT, () => {
     console.log(`✅ Backend démarré sur http://localhost:${PORT}`);
 });
