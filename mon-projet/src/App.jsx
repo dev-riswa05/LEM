@@ -186,7 +186,7 @@ export default function App() {
           {/* Chat Zone */}
           <div className={`flex-1 flex flex-col overflow-hidden ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-300">
+            <div className="flex items-center justify-between p-4 border-b border-gray-300 flex-none">
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-green-500 mr-2 flex items-center justify-center">🏥</div>
                 <span className="text-lg md:text-xl font-bold">Assistant Santé</span>
@@ -194,52 +194,58 @@ export default function App() {
               <button className="md:hidden p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => setShowChat(false)}>← Retour</button>
             </div>
 
-            {/* Messages scrollable fixe */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <div className={`overflow-y-auto p-3 md:p-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`} style={{ maxHeight: 'calc(100vh - 200px)' }}>
-                <div className="flex flex-col space-y-4">
-                  {messages.length === 0 && (
-                    <div className="text-center text-gray-500 py-8">
-                      <p className="text-lg">💬 Commencez la conversation !</p>
-                      <p className="text-sm">Exemple : "Bonjour, j'ai mal à la tête"</p>
-                    </div>
-                  )}
+            {/* Messages */}
+            <div className={`flex-1 overflow-y-auto p-3 md:p-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+              <div className="flex flex-col space-y-4">
+                {messages.length === 0 && (
+                  <div className="text-center text-gray-500 py-8">
+                    <p className="text-lg">💬 Commencez la conversation !</p>
+                    <p className="text-sm">Exemple : "Bonjour, j'ai mal à la tête"</p>
+                  </div>
+                )}
 
-                  {messages.map((msg) => (
-                    <div key={msg.id} className={`p-4 rounded-2xl max-w-[90%] md:max-w-md break-words ${msg.sender === 'user' ? `${userAccentColor} text-white self-end ml-auto` : `${aiAccentColor} text-white self-start`}`}>
-                      <p className="whitespace-pre-wrap">{msg.text}</p>
-                    </div>
-                  ))}
+                {messages.map((msg) => (
+                  <div key={msg.id} className={`p-4 rounded-2xl max-w-[90%] md:max-w-md break-words ${msg.sender === 'user' ? `${userAccentColor} text-white self-end ml-auto` : `${aiAccentColor} text-white self-start`}`}>
+                    <p className="whitespace-pre-wrap">{msg.text}</p>
+                  </div>
+                ))}
 
-                  {isLoading && (
-                    <div className={`p-4 rounded-2xl self-start ${aiAccentColor} text-white max-w-md`}>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 rounded-full bg-white animate-bounce" />
-                        <div className="w-2 h-2 rounded-full bg-white animate-bounce delay-150" />
-                        <div className="w-2 h-2 rounded-full bg-white animate-bounce delay-300" />
-                      </div>
+                {isLoading && (
+                  <div className={`p-4 rounded-2xl self-start ${aiAccentColor} text-white max-w-md`}>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 rounded-full bg-white animate-bounce" />
+                      <div className="w-2 h-2 rounded-full bg-white animate-bounce delay-150" />
+                      <div className="w-2 h-2 rounded-full bg-white animate-bounce delay-300" />
                     </div>
-                  )}
-                  <div ref={endRef} />
-                </div>
+                  </div>
+                )}
+                <div ref={endRef} />
               </div>
+            </div>
 
-              {/* Input fixe */}
-              <div className={`p-3 md:p-4 border-t flex items-center gap-2 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
-                <button className="p-3 rounded-full bg-purple-500 hover:bg-purple-600 text-white transition disabled:opacity-50" onClick={handleSummarize} disabled={isSummarizing || isLoading || isGettingTip || messages.length === 0}>
-                  {isSummarizing ? '📝Résumer...' : '📝Résumer'}
-                </button>
+            {/* Barre fixe en bas */}
+            <div className={`p-3 md:p-4 border-t flex items-center gap-2 flex-none ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
+              <button className="p-3 rounded-full bg-purple-500 hover:bg-purple-600 text-white transition disabled:opacity-50" onClick={handleSummarize} disabled={isSummarizing || isLoading || isGettingTip || messages.length === 0}>
+                {isSummarizing ? '📝 Résumer...' : '📝 Résumer'}
+              </button>
 
-                <button className="p-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white transition disabled:opacity-50" onClick={handleDailyTip} disabled={isGettingTip || isLoading || isSummarizing}>
-                  {isGettingTip ? '🩺Conseil ...' : '🩺Conseil'}
-                </button>
+              <button className="p-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white transition disabled:opacity-50" onClick={handleDailyTip} disabled={isGettingTip || isLoading || isSummarizing}>
+                {isGettingTip ? '🩺 Conseil...' : '🩺 Conseil'}
+              </button>
 
-                <input type="text" placeholder="Posez votre question santé..." className={`flex-1 px-4 py-3 rounded-full border text-sm md:text-base ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white' : 'bg-gray-100 border-gray-300 text-gray-800'}`} value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} disabled={isLoading || isSummarizing || isGettingTip} />
+              <input
+                type="text"
+                placeholder="Posez votre question santé..."
+                className={`flex-1 px-4 py-3 rounded-full border text-sm md:text-base ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white' : 'bg-gray-100 border-gray-300 text-gray-800'}`}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                disabled={isLoading || isSummarizing || isGettingTip}
+              />
 
-                <button className="p-3 rounded-full bg-green-500 hover:bg-green-600 text-white transition disabled:opacity-50" onClick={handleSendMessage} disabled={isLoading || isSummarizing || isGettingTip || !message.trim()}>
-                  ➤
-                </button>
-              </div>
+              <button className="p-3 rounded-full bg-green-500 hover:bg-green-600 text-white transition disabled:opacity-50" onClick={handleSendMessage} disabled={isLoading || isSummarizing || isGettingTip || !message.trim()}>
+                ➤
+              </button>
             </div>
           </div>
         </div>
