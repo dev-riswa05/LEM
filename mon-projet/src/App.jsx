@@ -125,7 +125,7 @@ export default function App() {
   const handleAiColorChange = (c) => setAiAccentColor(c);
 
   return (
-    <div className={`flex flex-col min-h-screen font-inter relative ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-100'}`}>
+    <div className={`flex flex-col min-h-screen font-inter relative overflow-hidden ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-100'}`}>
       {!showChat ? (
         <div className="flex-1 flex flex-col items-center justify-center relative z-20 p-4">
           <div className="flex flex-col items-center p-6 md:p-8 rounded-2xl shadow-2xl bg-white/50 backdrop-blur-sm animate-fade-in transition-all max-w-lg w-full">
@@ -145,25 +145,20 @@ export default function App() {
         </div>
       ) : (
         <div className="flex-1 flex flex-col md:flex-row relative z-10 w-full overflow-hidden">
+          
           {/* Sidebar */}
-          <div className={`hidden md:flex relative z-10 md:w-1/4 lg:w-1/5 xl:w-1/6 p-6 flex-col space-y-6 overflow-y-auto ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
+          <div className={`hidden md:flex relative z-10 md:w-1/4 lg:w-1/5 xl:w-1/6 p-6 flex-col space-y-6 ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
             <h2 className="text-2xl font-bold">Personnalisation</h2>
             <button className="px-4 py-2 text-sm font-semibold rounded-full bg-green-500 hover:bg-green-600 text-white transition" onClick={handleNewConversation}>
               Nouvelle conversation
             </button>
-
             <div className="flex flex-col space-y-4">
               <h3 className="text-lg font-semibold">Thème</h3>
               <div className="flex space-x-3">
-                <button className={`p-3 rounded-xl border-2 ${theme === 'light' ? 'border-blue-500' : 'border-transparent'} bg-white text-gray-800`} onClick={() => handleThemeChange('light')}>
-                  ☀️ Clair
-                </button>
-                <button className={`p-3 rounded-xl border-2 ${theme === 'dark' ? 'border-blue-500' : 'border-transparent'} bg-gray-800 text-white`} onClick={() => handleThemeChange('dark')}>
-                  🌙 Sombre
-                </button>
+                <button className={`p-3 rounded-xl border-2 ${theme === 'light' ? 'border-blue-500' : 'border-transparent'} bg-white text-gray-800`} onClick={() => handleThemeChange('light')}>☀️ Clair</button>
+                <button className={`p-3 rounded-xl border-2 ${theme === 'dark' ? 'border-blue-500' : 'border-transparent'} bg-gray-800 text-white`} onClick={() => handleThemeChange('dark')}>🌙 Sombre</button>
               </div>
             </div>
-
             <div className="flex flex-col space-y-3">
               <h3 className="text-lg font-semibold">Couleur utilisateur</h3>
               <div className="flex flex-wrap gap-2">
@@ -172,7 +167,6 @@ export default function App() {
                 ))}
               </div>
             </div>
-
             <div className="flex flex-col space-y-3">
               <h3 className="text-lg font-semibold">Couleur IA</h3>
               <div className="flex flex-wrap gap-2">
@@ -183,8 +177,9 @@ export default function App() {
             </div>
           </div>
 
-          {/* Chat Zone */}
-          <div className={`flex-1 flex flex-col overflow-hidden ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
+          {/* Zone Chat */}
+          <div className={`flex-1 flex flex-col ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
+            
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-300 flex-none">
               <div className="flex items-center">
@@ -203,13 +198,11 @@ export default function App() {
                     <p className="text-sm">Exemple : "Bonjour, j'ai mal à la tête"</p>
                   </div>
                 )}
-
                 {messages.map((msg) => (
                   <div key={msg.id} className={`p-4 rounded-2xl max-w-[90%] md:max-w-md break-words ${msg.sender === 'user' ? `${userAccentColor} text-white self-end ml-auto` : `${aiAccentColor} text-white self-start`}`}>
                     <p className="whitespace-pre-wrap">{msg.text}</p>
                   </div>
                 ))}
-
                 {isLoading && (
                   <div className={`p-4 rounded-2xl self-start ${aiAccentColor} text-white max-w-md`}>
                     <div className="flex items-center space-x-2">
