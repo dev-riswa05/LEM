@@ -22,7 +22,7 @@ export default function App() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const BACKEND_URL = 'http://localhost:3001'; // Ton backend déployé
+  const BACKEND_URL = 'https://lem-dusky.vercel.app'; // Ton backend déployé
 
   const callBackendApi = async (userMessage, actionType = 'chat') => {
     try {

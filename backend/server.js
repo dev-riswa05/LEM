@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3001;
 // --- Configuration CORS pour prod et dev ---
 app.use(cors({
     origin: [
-        'https://lem-pdgo.vercel.app', // ton front déployé
+        'https://lem-8dqk.vercel.app/', // ton front déployé
         'http://localhost:5173',        // dev front vite
         'http://localhost:3000'
     ],
