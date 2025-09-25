@@ -32,18 +32,43 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'fake-key-for
 // Fonction utilitaire pour appeler l’API Gemini
 const callGeminiApi = async (prompt) => {
     try {
+        // 🔑 Vérification de la clé
         if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'fake-key-for-init') {
             throw new Error('Clé API Gemini non configurée');
         }
+
+        // 🤖 Appel du modèle Gemini
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const result = await model.generateContent(prompt);
         const response = await result.response;
+
         return response.text();
+
     } catch (error) {
         console.error("Erreur Gemini :", error);
-        return "Désolé, une erreur est survenue avec l'assistant. Veuillez réessayer.";
+
+        // 🛠️ Gestion spécifique selon l’erreur
+        if (error.message.includes("quota") || error.message.includes("Quota")) {
+            return "⚠️ Vous avez atteint la limite de requêtes (quota). Réessayez plus tard ou changez de clé API.";
+        }
+
+        if (error.message.includes("429")) {
+            return "🚦 Trop de requêtes envoyées en peu de temps (erreur 429). Patientez un instant avant de réessayer.";
+        }
+
+        if (error.message.includes("network") || error.message.includes("fetch")) {
+            return "🌐 Problème de connexion réseau. Vérifiez votre internet ou réessayez.";
+        }
+
+        if (error.message.includes("API key") || error.message.includes("auth")) {
+            return "🔑 Clé API invalide ou manquante. Contactez l’administrateur.";
+        }
+
+        // 🔄 Par défaut (erreur inconnue)
+        return "❌ Une erreur inattendue est survenue avec l'assistant. Veuillez réessayer.";
     }
 };
+
 
 // --- Middleware log (journalisation des requêtes entrantes) ---
 app.use((req, res, next) => {
