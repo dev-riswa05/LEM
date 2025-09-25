@@ -148,7 +148,7 @@ export default function App() {
           {/* Sidebar */}
           <div className={`hidden md:flex relative z-10 md:w-1/4 p-4 md:p-6 flex-col space-y-6 overflow-y-auto ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
             <h2 className="text-xl md:text-2xl font-bold">Personnalisation</h2>
-            <button className="px-4 py-2 text-sm font-semibold rounded-full bg-green-500 hover:bg-green-600 text-white transition" onClick={handleNewConversation}>
+            <button className="px-4 py-2 text-sm font-semibold rounded-full bg-green-500 hover:bg-green-600 text-white transition">
               Nouvelle conversation
             </button>
 
@@ -185,25 +185,12 @@ export default function App() {
 
           {/* Zone de chat */}
           <div className={`flex-1 flex flex-col overflow-hidden w-full min-h-0 ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
-            
-            {/* HEADER MODIFIÉ */}
             <div className="flex items-center justify-between p-3 md:p-4 border-b border-gray-300">
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-green-500 mr-2 flex items-center justify-center">🏥</div>
                 <span className="text-lg md:text-xl font-bold">Assistant Santé</span>
               </div>
-
-              {/* Bouton bascule thème pour mobile */}
-              <button
-                className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 ml-2 md:hidden"
-                onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}
-              >
-                {theme === 'light' ? "🌙" : "☀️"}
-              </button>
-
-              <button className="md:hidden p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => setShowChat(false)}>
-                ← Retour
-              </button>
+              <button className="md:hidden p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => setShowChat(false)}>← Retour</button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-3 md:p-6 flex flex-col min-h-0">
