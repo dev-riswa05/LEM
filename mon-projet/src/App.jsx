@@ -194,9 +194,9 @@ export default function App() {
               <button className="md:hidden p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => setShowChat(false)}>← Retour</button>
             </div>
 
-            {/* Messages scrollable fixe */}
+            {/* Messages */}
             <div className="flex-1 flex flex-col overflow-hidden">
-              <div className={`overflow-y-auto p-3 md:p-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`} style={{ maxHeight: 'calc(100vh - 200px)' }}>
+              <div className={`flex-1 overflow-y-auto p-3 md:p-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
                 <div className="flex flex-col space-y-4">
                   {messages.length === 0 && (
                     <div className="text-center text-gray-500 py-8">
